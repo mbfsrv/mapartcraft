@@ -72,7 +72,26 @@
     "BEST-RESOLUTION-TT": "Изображение такого разрешения будет выглядеть лучше всего",
     "ASPECT-RATIO-MISMATCH-TT": "Изображение не соответствует соотношению сторон карты",
     "SCALE-MINUS-TT": "Уменьшить превью",
-    "SCALE-PLUS-TT": "Увеличить превью"
+    "SCALE-PLUS-TT": "Увеличить превью",
+    "CHANGE-IMAGE": null,
+    "EDITOR": {
+      "PEN": null,
+      "PEN-TT": null,
+      "EYEDROPPER": null,
+      "EYEDROPPER-TT": null,
+      "BUCKET": null,
+      "BUCKET-TT": null,
+      "UNDO": null,
+      "UNDO-TT": null,
+      "TRANSPARENT": null,
+      "NO-COLOUR-SELECTED": null,
+      "NO-COLOURS": null,
+      "PICK-FAILED": null,
+      "TONE-DARK": null,
+      "TONE-NORMAL": null,
+      "TONE-LIGHT": null,
+      "TONE-UNOBTAINABLE": null
+    }
   },
   "MAP-SETTINGS": {
     "TITLE": "Настройки",

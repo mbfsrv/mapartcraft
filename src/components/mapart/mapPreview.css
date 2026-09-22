@@ -21,10 +21,133 @@
   image-rendering: -o-crisp-edges; /* OS X & Windows Opera (12.02+) */
   image-rendering: pixelated; /* Awesome future-browsers */
   -ms-interpolation-mode: nearest-neighbor; /* IE */
-  cursor: pointer;
+  cursor: crosshair;
+  touch-action: none; /* stop touch drawing from scrolling the page */
   font-smooth: never;
   -webkit-font-smoothing: none;
   subpixel-antialias: none;
+}
+
+.mapCanvas_eyedropper {
+  cursor: copy;
+}
+
+.mapCanvas_bucket {
+  cursor: cell;
+}
+
+.mapPreviewHeader {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.6em;
+}
+
+.changeImageButton,
+.pixelEditorButton {
+  font-family: inherit;
+  font-size: 14px;
+  color: #fff;
+  background-color: #555;
+  border: 1px solid #777;
+  border-radius: 3px;
+  padding: 2px 8px;
+  cursor: pointer;
+}
+
+.changeImageButton {
+  background-color: var(--rebaneGreen);
+  border-color: var(--rebaneGreen);
+  color: #000;
+}
+
+.changeImageButton:hover,
+.pixelEditorButton:hover:enabled {
+  filter: brightness(1.15);
+}
+
+.pixelEditorButton:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.pixelEditorButton_selected {
+  background-color: #688e6b;
+  border-color: #fff;
+}
+
+.pixelEditor {
+  margin-top: 4px;
+}
+
+.pixelEditorToolbar {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 4px;
+}
+
+.pixelEditorCurrentName {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+  flex: 1;
+}
+
+.pixelEditorPalette {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 2px;
+}
+
+.pixelEditorSwatch {
+  display: inline-block;
+  box-sizing: border-box;
+  width: 16px;
+  height: 16px;
+  border: 1px solid #222;
+  cursor: pointer;
+}
+
+.pixelEditorSwatch_selected {
+  outline: 2px solid #fff;
+  outline-offset: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.pixelEditorCurrentSwatch {
+  width: 22px;
+  height: 22px;
+  margin-left: 6px;
+  border-color: #fff;
+  cursor: default;
+}
+
+.pixelEditorSwatch_transparent {
+  background-color: #fff;
+  background-image: linear-gradient(45deg, #bbb 25%, transparent 25%, transparent 75%, #bbb 75%),
+    linear-gradient(45deg, #bbb 25%, transparent 25%, transparent 75%, #bbb 75%);
+  background-size: 8px 8px;
+  background-position: 0 0, 4px 4px;
+}
+
+.pixelEditorNoColours {
+  font-size: 13px;
+  padding: 2px 4px;
+}
+
+.pixelEditorHint {
+  font-size: 13px;
+  padding: 2px 4px;
+  margin-bottom: 4px;
+  color: #000;
+  background-color: #f0c674;
+  border-radius: 3px;
 }
 
 .mapResolutionAndZoom {

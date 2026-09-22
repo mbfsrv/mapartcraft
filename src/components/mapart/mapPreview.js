@@ -8,6 +8,7 @@ import CropModes from "./json/cropModes.json";
 import DitherMethods from "./json/ditherMethods.json";
 import MapModes from "./json/mapModes.json";
 import WhereSupportBlocksModes from "./json/whereSupportBlocksModes.json";
+import { EditorTools, getEditorPalette, pixelKeyAt, setPixel, lineCoords, floodFill } from "./pixelEditor";
 
 import IMG_Null from "../../images/null.png";
 import IMG_Textures from "../../images/textures.png";
@@ -19,7 +20,19 @@ class MapPreview extends Component {
   state = {
     mapPreviewSizeScale: 2,
     workerProgress: 0,
+    editorTool: EditorTools.PEN,
+    editorColourKey: null,
+    undoCount: 0,
+    editorHintKey: null, // locale key of a short message explaining why a click on the map did nothing
   };
+
+  editorHintTimeout = null;
+
+  editImageData = null; // converted map pixels; the source of truth that the editor modifies
+  undoStack = [];
+  isConverting = false; // true while the image is being converted from source; editing is blocked
+  strokeLastPixel = null; // last pixel painted in the current pen stroke
+  UNDO_LIMIT = 30;
 
   mapCanvasWorker = new Worker(MapCanvasWorker);
 
@@ -184,7 +197,7 @@ class MapPreview extends Component {
       optionValue_cropImage_percent_y,
     } = this.props;
     const { canvasRef_source } = this;
-    const ctx_source = canvasRef_source.current.getContext("2d");
+    const ctx_source = canvasRef_source.current.getContext("2d", { willReadFrequently: true });
     ctx_source.imageSmoothingEnabled = true;   // These two options keep the map preview consistent on Chrome(ium). Otherwise the first render after changing
     ctx_source.imageSmoothingQuality = "high"; // map x or z size is pixelated to a noticeably lower quality. This is not a solution to the cause but a
                                                // workaround the effect (I do not know exactly why this happens: maybe it is to do with
@@ -276,7 +289,7 @@ class MapPreview extends Component {
       onGetMapMaterials,
       onMapPreviewWorker_begin,
     } = this.props;
-    const ctx_source = canvasRef_source.current.getContext("2d");
+    const ctx_source = canvasRef_source.current.getContext("2d", { willReadFrequently: true });
     const canvasImageData = ctx_source.getImageData(0, 0, ctx_source.canvas.width, ctx_source.canvas.height);
     const t0 = performance.now();
     this.mapCanvasWorker = new Worker(MapCanvasWorker);
@@ -286,7 +299,12 @@ class MapPreview extends Component {
         console.log(`Calculated map preview data in ${(t1 - t0).toString()}ms`);
         const ctx_display = canvasRef_display.current.getContext("2d");
         ctx_display.putImageData(e.data.body.pixels, 0, 0);
-        this.setState({ workerProgress: 1 });
+        const pixels = e.data.body.pixels;
+        this.editImageData = new ImageData(new Uint8ClampedArray(pixels.data), pixels.width, pixels.height);
+        this.undoStack = [];
+        this.isConverting = false;
+        this.strokeLastPixel = null;
+        this.setState({ workerProgress: 1, undoCount: 0 });
         onGetMapMaterials({
           pixelsData: e.data.body.pixels.data,
           maps: e.data.body.maps,
@@ -296,6 +314,7 @@ class MapPreview extends Component {
         this.setState({ workerProgress: e.data.body });
       }
     };
+    this.isConverting = true;
     onMapPreviewWorker_begin();
     this.mapCanvasWorker.postMessage({
       head: "PIXELS",
@@ -319,6 +338,246 @@ class MapPreview extends Component {
     });
   }
 
+  updateMaterials_edited() {
+    // re-run the worker on the edited pixels so materials, support blocks and exported NBT / map.dat stay in sync.
+    // every pixel is already an exact palette colour so no dithering is wanted; the worker maps each pixel to itself
+    this.mapCanvasWorker.terminate();
+    const {
+      coloursJSON,
+      selectedBlocks,
+      optionValue_modeNBTOrMapdat,
+      optionValue_mapSize_x,
+      optionValue_mapSize_y,
+      optionValue_staircasing,
+      optionValue_whereSupportBlocks,
+      optionValue_transparency,
+      onGetMapMaterials,
+      onMapPreviewWorker_begin,
+    } = this.props;
+    const { editImageData } = this;
+    this.mapCanvasWorker = new Worker(MapCanvasWorker);
+    this.mapCanvasWorker.onmessage = (e) => {
+      if (e.data.head === "PIXELS_MATERIALS_CURRENTSELECTEDBLOCKS") {
+        this.setState({ workerProgress: 1 });
+        onGetMapMaterials({
+          pixelsData: e.data.body.pixels.data,
+          maps: e.data.body.maps,
+          currentSelectedBlocks: e.data.body.currentSelectedBlocks,
+        });
+      } else if (e.data.head === "PROGRESS_REPORT") {
+        this.setState({ workerProgress: e.data.body });
+      }
+    };
+    onMapPreviewWorker_begin();
+    this.mapCanvasWorker.postMessage({
+      head: "PIXELS",
+      body: {
+        coloursJSON: coloursJSON,
+        MapModes: MapModes,
+        WhereSupportBlocksModes: WhereSupportBlocksModes,
+        DitherMethods: DitherMethods,
+        canvasImageData: new ImageData(new Uint8ClampedArray(editImageData.data), editImageData.width, editImageData.height),
+        selectedBlocks: selectedBlocks,
+        optionValue_modeNBTOrMapdat: optionValue_modeNBTOrMapdat,
+        optionValue_mapSize_x: optionValue_mapSize_x,
+        optionValue_mapSize_y: optionValue_mapSize_y,
+        optionValue_staircasing: optionValue_staircasing,
+        optionValue_whereSupportBlocks: optionValue_whereSupportBlocks,
+        optionValue_transparency: optionValue_transparency,
+        optionValue_transparencyTolerance: 128, // edited pixels are either fully opaque or fully transparent
+        optionValue_betterColour: false,
+        optionValue_dithering: DitherMethods.None.uniqueId,
+      },
+    });
+  }
+
+  getEditorPalette() {
+    const { coloursJSON, selectedBlocks, optionValue_modeNBTOrMapdat, optionValue_staircasing, optionValue_transparency } = this.props;
+    return getEditorPalette(coloursJSON, selectedBlocks, MapModes, optionValue_modeNBTOrMapdat, optionValue_staircasing, optionValue_transparency);
+  }
+
+  getSelectedPaletteEntry(palette) {
+    const { editorColourKey } = this.state;
+    const found = palette.find((paletteEntry) => paletteEntry.key === editorColourKey);
+    return found === undefined ? null : found;
+  }
+
+  canEdit() {
+    const { editImageData, canvasRef_display } = this;
+    return (
+      !this.isConverting &&
+      editImageData !== null &&
+      canvasRef_display.current !== null &&
+      editImageData.width === canvasRef_display.current.width &&
+      editImageData.height === canvasRef_display.current.height
+    );
+  }
+
+  pushUndo(snapshot = new Uint8ClampedArray(this.editImageData.data)) {
+    this.undoStack.push(snapshot);
+    if (this.undoStack.length > this.UNDO_LIMIT) {
+      this.undoStack.shift();
+    }
+    this.setState({ undoCount: this.undoStack.length });
+  }
+
+  handleUndo = () => {
+    if (!this.canEdit() || this.undoStack.length === 0) {
+      return;
+    }
+    this.editImageData.data.set(this.undoStack.pop());
+    this.canvasRef_display.current.getContext("2d").putImageData(this.editImageData, 0, 0);
+    this.setState({ undoCount: this.undoStack.length });
+    this.updateMaterials_edited();
+  };
+
+  eventListener_keydown = (e) => {
+    if (!(e.ctrlKey || e.metaKey) || e.shiftKey || e.key.toLowerCase() !== "z") {
+      return;
+    }
+    const target = e.target;
+    if (target instanceof HTMLElement && (target.isContentEditable || ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName))) {
+      return;
+    }
+    e.preventDefault();
+    this.handleUndo();
+  };
+
+  componentDidMount() {
+    document.addEventListener("keydown", this.eventListener_keydown);
+  }
+
+  getCanvasPixelFromEvent(e) {
+    const canvas = this.canvasRef_display.current;
+    const rect = canvas.getBoundingClientRect();
+    const x = Math.floor(((e.clientX - rect.left) / rect.width) * canvas.width);
+    const y = Math.floor(((e.clientY - rect.top) / rect.height) * canvas.height);
+    if (x < 0 || y < 0 || x >= canvas.width || y >= canvas.height) {
+      return null;
+    }
+    return [x, y];
+  }
+
+  showEditorHint(localeKey) {
+    clearTimeout(this.editorHintTimeout);
+    this.setState({ editorHintKey: localeKey });
+    this.editorHintTimeout = setTimeout(() => this.setState({ editorHintKey: null }), 4000);
+  }
+
+  pickColourAt(x, y, palette) {
+    const key = pixelKeyAt(this.editImageData.data, 4 * (y * this.editImageData.width + x));
+    // only colours that are currently allowed can be picked up
+    if (palette.some((paletteEntry) => paletteEntry.key === key)) {
+      clearTimeout(this.editorHintTimeout);
+      this.setState((currentState) => ({
+        editorColourKey: key,
+        editorTool: currentState.editorTool === EditorTools.EYEDROPPER ? EditorTools.PEN : currentState.editorTool,
+        editorHintKey: null,
+      }));
+    } else {
+      this.showEditorHint("MAP-PREVIEW/EDITOR/PICK-FAILED");
+    }
+  }
+
+  paintPixels(coords, paletteEntry) {
+    const ctx_display = this.canvasRef_display.current.getContext("2d");
+    if (paletteEntry.rgb !== null) {
+      ctx_display.fillStyle = `rgb(${paletteEntry.rgb[0]}, ${paletteEntry.rgb[1]}, ${paletteEntry.rgb[2]})`;
+    }
+    for (const [x, y] of coords) {
+      setPixel(this.editImageData, x, y, paletteEntry);
+      if (paletteEntry.rgb === null) {
+        ctx_display.clearRect(x, y, 1, 1);
+      } else {
+        ctx_display.fillRect(x, y, 1, 1);
+      }
+    }
+  }
+
+  onCanvasPointerDown = (e) => {
+    // left button paints with the current tool, right button (or Alt+left) is always the eyedropper
+    if (![0, 2].includes(e.button) || !this.canEdit()) {
+      return;
+    }
+    const pixel = this.getCanvasPixelFromEvent(e);
+    if (pixel === null) {
+      return;
+    }
+    e.preventDefault();
+    const [x, y] = pixel;
+    const palette = this.getEditorPalette();
+    if (palette.length === 0) {
+      this.showEditorHint("MAP-PREVIEW/EDITOR/NO-COLOURS");
+      return;
+    }
+    const { editorTool } = this.state;
+    if (editorTool === EditorTools.EYEDROPPER || e.button === 2 || e.altKey) {
+      this.pickColourAt(x, y, palette);
+      return;
+    }
+    const paletteEntry = this.getSelectedPaletteEntry(palette);
+    if (paletteEntry === null) {
+      this.showEditorHint("MAP-PREVIEW/EDITOR/NO-COLOUR-SELECTED");
+      return;
+    }
+    if (editorTool === EditorTools.BUCKET) {
+      const before = new Uint8ClampedArray(this.editImageData.data);
+      if (floodFill(this.editImageData, x, y, paletteEntry)) {
+        this.pushUndo(before);
+        this.canvasRef_display.current.getContext("2d").putImageData(this.editImageData, 0, 0);
+        this.updateMaterials_edited();
+      }
+      return;
+    }
+    // pen
+    this.pushUndo();
+    e.currentTarget.setPointerCapture(e.pointerId);
+    this.strokeLastPixel = pixel;
+    this.paintPixels([pixel], paletteEntry);
+  };
+
+  onCanvasPointerMove = (e) => {
+    if (this.strokeLastPixel === null || !this.canEdit()) {
+      return;
+    }
+    const pixel = this.getCanvasPixelFromEvent(e);
+    if (pixel === null) {
+      return;
+    }
+    const paletteEntry = this.getSelectedPaletteEntry(this.getEditorPalette());
+    if (paletteEntry === null) {
+      return;
+    }
+    const [x0, y0] = this.strokeLastPixel;
+    const [x1, y1] = pixel;
+    if (x0 === x1 && y0 === y1) {
+      return;
+    }
+    this.paintPixels(lineCoords(x0, y0, x1, y1), paletteEntry);
+    this.strokeLastPixel = pixel;
+  };
+
+  onCanvasPointerUp = () => {
+    if (this.strokeLastPixel === null) {
+      return;
+    }
+    this.strokeLastPixel = null;
+    if (this.canEdit()) {
+      this.updateMaterials_edited();
+    }
+  };
+
+  onEditorToolChange = (tool) => {
+    this.setState({ editorTool: tool });
+  };
+
+  onEditorColourChange = (key) => {
+    this.setState((currentState) => ({
+      editorColourKey: key,
+      editorTool: currentState.editorTool === EditorTools.EYEDROPPER ? EditorTools.PEN : currentState.editorTool,
+    }));
+  };
+
   increasePreviewScale = () => {
     this.setState({
       mapPreviewSizeScale: this.state.mapPreviewSizeScale * 1.2,
@@ -333,6 +592,83 @@ class MapPreview extends Component {
 
   componentWillUnmount() {
     this.mapCanvasWorker.terminate();
+    document.removeEventListener("keydown", this.eventListener_keydown);
+    clearTimeout(this.editorHintTimeout);
+  }
+
+  renderEditor(palette) {
+    const { getLocaleString, optionValue_mapSize_x } = this.props;
+    const { mapPreviewSizeScale, editorTool, undoCount, editorHintKey } = this.state;
+    const selectedPaletteEntry = this.getSelectedPaletteEntry(palette);
+    const tools = [
+      [EditorTools.PEN, "MAP-PREVIEW/EDITOR/PEN", "MAP-PREVIEW/EDITOR/PEN-TT"],
+      [EditorTools.EYEDROPPER, "MAP-PREVIEW/EDITOR/EYEDROPPER", "MAP-PREVIEW/EDITOR/EYEDROPPER-TT"],
+      [EditorTools.BUCKET, "MAP-PREVIEW/EDITOR/BUCKET", "MAP-PREVIEW/EDITOR/BUCKET-TT"],
+    ];
+    const toneLocaleKeys = {
+      dark: "MAP-PREVIEW/EDITOR/TONE-DARK",
+      normal: "MAP-PREVIEW/EDITOR/TONE-NORMAL",
+      light: "MAP-PREVIEW/EDITOR/TONE-LIGHT",
+      unobtainable: "MAP-PREVIEW/EDITOR/TONE-UNOBTAINABLE",
+    };
+    const paletteEntryTitle = (paletteEntry) =>
+      paletteEntry.rgb === null
+        ? getLocaleString("MAP-PREVIEW/EDITOR/TRANSPARENT")
+        : `${paletteEntry.displayName} (${getLocaleString(toneLocaleKeys[paletteEntry.tone])})`;
+    return (
+      <div className="pixelEditor" style={{ maxWidth: `${Math.max(256, mapPreviewSizeScale * 128 * optionValue_mapSize_x).toString()}px` }}>
+        <div className="pixelEditorToolbar">
+          {tools.map(([tool, labelKey, tooltipKey]) => (
+            <button
+              key={tool}
+              type="button"
+              className={`pixelEditorButton${editorTool === tool ? " pixelEditorButton_selected" : ""}`}
+              title={getLocaleString(tooltipKey)}
+              onClick={() => this.onEditorToolChange(tool)}
+            >
+              {getLocaleString(labelKey)}
+            </button>
+          ))}
+          <button type="button" className="pixelEditorButton" title={getLocaleString("MAP-PREVIEW/EDITOR/UNDO-TT")} disabled={undoCount === 0} onClick={this.handleUndo}>
+            {getLocaleString("MAP-PREVIEW/EDITOR/UNDO")}
+          </button>
+          <span
+            className={`pixelEditorSwatch pixelEditorCurrentSwatch${selectedPaletteEntry !== null && selectedPaletteEntry.rgb === null ? " pixelEditorSwatch_transparent" : ""}`}
+            title={selectedPaletteEntry === null ? getLocaleString("MAP-PREVIEW/EDITOR/NO-COLOUR-SELECTED") : paletteEntryTitle(selectedPaletteEntry)}
+            style={
+              selectedPaletteEntry !== null && selectedPaletteEntry.rgb !== null
+                ? { backgroundColor: `rgb(${selectedPaletteEntry.rgb.join(",")})` }
+                : undefined
+            }
+          />
+          <small className="pixelEditorCurrentName">
+            {selectedPaletteEntry === null ? getLocaleString("MAP-PREVIEW/EDITOR/NO-COLOUR-SELECTED") : paletteEntryTitle(selectedPaletteEntry)}
+          </small>
+        </div>
+        {editorHintKey !== null && editorHintKey !== "MAP-PREVIEW/EDITOR/NO-COLOURS" && (
+          <div className="pixelEditorHint">{getLocaleString(editorHintKey)}</div>
+        )}
+        {palette.length === 0 ? (
+          <div className={`pixelEditorNoColours${editorHintKey === "MAP-PREVIEW/EDITOR/NO-COLOURS" ? " pixelEditorHint" : ""}`}>
+            {getLocaleString("MAP-PREVIEW/EDITOR/NO-COLOURS")}
+          </div>
+        ) : (
+          <div className="pixelEditorPalette">
+            {palette.map((paletteEntry) => (
+              <span
+                key={paletteEntry.key}
+                className={`pixelEditorSwatch${paletteEntry.rgb === null ? " pixelEditorSwatch_transparent" : ""}${
+                  selectedPaletteEntry === paletteEntry ? " pixelEditorSwatch_selected" : ""
+                }`}
+                title={paletteEntryTitle(paletteEntry)}
+                style={paletteEntry.rgb === null ? undefined : { backgroundColor: `rgb(${paletteEntry.rgb.join(",")})` }}
+                onClick={() => this.onEditorColourChange(paletteEntry.key)}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+    );
   }
 
   render() {
@@ -345,11 +681,26 @@ class MapPreview extends Component {
       onFileDialogEvent,
       uploadedImage,
     } = this.props;
-    const { mapPreviewSizeScale, workerProgress } = this.state;
+    const { mapPreviewSizeScale, workerProgress, editorTool } = this.state;
+    const palette = this.getEditorPalette();
     return (
       <div className="section mapPreviewDiv">
-        <h2>{getLocaleString("MAP-PREVIEW/TITLE")}</h2>
-        <input type="file" className="imgUpload" ref={this.fileInputRef} onChange={onFileDialogEvent} />
+        <div className="mapPreviewHeader">
+          <h2>{getLocaleString("MAP-PREVIEW/TITLE")}</h2>
+          <button type="button" className="changeImageButton" onClick={() => this.fileInputRef.current.click()}>
+            {getLocaleString("MAP-PREVIEW/CHANGE-IMAGE")}
+          </button>
+        </div>
+        <input
+          type="file"
+          accept="image/*"
+          className="imgUpload"
+          ref={this.fileInputRef}
+          onChange={(e) => {
+            onFileDialogEvent(e);
+            e.target.value = ""; // allow choosing the same file again
+          }}
+        />
         <div>
           <span
             className="gridOverlay"
@@ -362,7 +713,7 @@ class MapPreview extends Component {
             }}
           />
           <canvas
-            className="mapCanvas"
+            className={`mapCanvas mapCanvas_${editorTool.toLowerCase()}`}
             width={128 * optionValue_mapSize_x}
             height={128 * optionValue_mapSize_y}
             ref={this.canvasRef_display}
@@ -370,7 +721,11 @@ class MapPreview extends Component {
               width: `${(mapPreviewSizeScale * 128 * optionValue_mapSize_x).toString()}px`,
               height: `${(mapPreviewSizeScale * 128 * optionValue_mapSize_y).toString()}px`,
             }}
-            onClick={() => this.fileInputRef.current.click()}
+            onPointerDown={this.onCanvasPointerDown}
+            onPointerMove={this.onCanvasPointerMove}
+            onPointerUp={this.onCanvasPointerUp}
+            onPointerCancel={this.onCanvasPointerUp}
+            onContextMenu={(e) => e.preventDefault()}
           />
           <canvas className="displayNone" width={128 * optionValue_mapSize_x} height={128 * optionValue_mapSize_y} ref={this.canvasRef_source}></canvas>
         </div>
@@ -421,6 +776,7 @@ class MapPreview extends Component {
             </Tooltip>
           </div>
         </div>
+        {this.renderEditor(palette)}
         <div
           className="progress"
           style={

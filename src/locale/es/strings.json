@@ -72,7 +72,26 @@
     "BEST-RESOLUTION-TT": "Una imagen original con esta resolución funcionará mejor",
     "ASPECT-RATIO-MISMATCH-TT": "La imagen no concuerda con la relación de aspecto del mapa",
     "SCALE-MINUS-TT": "Disminuir vista previa",
-    "SCALE-PLUS-TT": "Ampliar vista previa"
+    "SCALE-PLUS-TT": "Ampliar vista previa",
+    "CHANGE-IMAGE": null,
+    "EDITOR": {
+      "PEN": null,
+      "PEN-TT": null,
+      "EYEDROPPER": null,
+      "EYEDROPPER-TT": null,
+      "BUCKET": null,
+      "BUCKET-TT": null,
+      "UNDO": null,
+      "UNDO-TT": null,
+      "TRANSPARENT": null,
+      "NO-COLOUR-SELECTED": null,
+      "NO-COLOURS": null,
+      "PICK-FAILED": null,
+      "TONE-DARK": null,
+      "TONE-NORMAL": null,
+      "TONE-LIGHT": null,
+      "TONE-UNOBTAINABLE": null
+    }
   },
   "MAP-SETTINGS": {
     "TITLE": "Opciones",

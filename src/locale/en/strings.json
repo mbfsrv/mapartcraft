@@ -72,7 +72,26 @@
     "BEST-RESOLUTION-TT": "A source image with this resolution will work the best",
     "ASPECT-RATIO-MISMATCH-TT": "Image doesn't match map's aspect ratio",
     "SCALE-MINUS-TT": "Make preview smaller",
-    "SCALE-PLUS-TT": "Make preview bigger"
+    "SCALE-PLUS-TT": "Make preview bigger",
+    "CHANGE-IMAGE": "Change image",
+    "EDITOR": {
+      "PEN": "Pen",
+      "PEN-TT": "Paint pixels with the selected colour (right-click or Alt+click to pick a colour)",
+      "EYEDROPPER": "Eyedropper",
+      "EYEDROPPER-TT": "Pick a colour from the map",
+      "BUCKET": "Bucket",
+      "BUCKET-TT": "Fill the connected area of the same colour",
+      "UNDO": "Undo",
+      "UNDO-TT": "Undo last edit (Ctrl+Z)",
+      "TRANSPARENT": "Transparent",
+      "NO-COLOUR-SELECTED": "Select a colour from the palette",
+      "NO-COLOURS": "No colours to paint with yet. Select blocks or a preset in \"Block selection\" first (until then the preview is the unconverted image).",
+      "PICK-FAILED": "That pixel is not one of the colours you can currently use",
+      "TONE-DARK": "dark",
+      "TONE-NORMAL": "normal",
+      "TONE-LIGHT": "light",
+      "TONE-UNOBTAINABLE": "unobtainable"
+    }
   },
   "MAP-SETTINGS": {
     "TITLE": "Settings",

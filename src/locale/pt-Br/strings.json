@@ -72,7 +72,26 @@
     "BEST-RESOLUTION-TT": "Uma imagem com esta resolução vai se encaixar melhor",
     "ASPECT-RATIO-MISMATCH-TT": "A imagem não corresponde à proporção do mapa",
     "SCALE-MINUS-TT": "Diminuir a pré-visualização",
-    "SCALE-PLUS-TT": "Aumentar a pré-visualização"
+    "SCALE-PLUS-TT": "Aumentar a pré-visualização",
+    "CHANGE-IMAGE": null,
+    "EDITOR": {
+      "PEN": null,
+      "PEN-TT": null,
+      "EYEDROPPER": null,
+      "EYEDROPPER-TT": null,
+      "BUCKET": null,
+      "BUCKET-TT": null,
+      "UNDO": null,
+      "UNDO-TT": null,
+      "TRANSPARENT": null,
+      "NO-COLOUR-SELECTED": null,
+      "NO-COLOURS": null,
+      "PICK-FAILED": null,
+      "TONE-DARK": null,
+      "TONE-NORMAL": null,
+      "TONE-LIGHT": null,
+      "TONE-UNOBTAINABLE": null
+    }
   },
   "MAP-SETTINGS": {
     "TITLE": "Configurações",

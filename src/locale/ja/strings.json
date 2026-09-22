@@ -72,7 +72,26 @@
     "BEST-RESOLUTION-TT": "この解像度の画像が最適です",
     "ASPECT-RATIO-MISMATCH-TT": "画像と地図の縦横比が一致しません",
     "SCALE-MINUS-TT": "プレビューを小さく",
-    "SCALE-PLUS-TT": "プレビューを大きく"
+    "SCALE-PLUS-TT": "プレビューを大きく",
+    "CHANGE-IMAGE": "画像を変更",
+    "EDITOR": {
+      "PEN": "ペン",
+      "PEN-TT": "選択した色でピクセルを塗ります (右クリック / Alt+クリックでスポイト)",
+      "EYEDROPPER": "スポイト",
+      "EYEDROPPER-TT": "地図上のピクセルから色を取得します",
+      "BUCKET": "バケツ",
+      "BUCKET-TT": "同じ色でつながった範囲を塗りつぶします",
+      "UNDO": "元に戻す",
+      "UNDO-TT": "直前の編集を取り消します (Ctrl+Z)",
+      "TRANSPARENT": "透明",
+      "NO-COLOUR-SELECTED": "パレットから色を選択してください",
+      "NO-COLOURS": "塗れる色がありません。まず「ブロック選択」でブロックかプリセットを選んでください（それまでプレビューは変換前の元画像です）",
+      "PICK-FAILED": "そのピクセルの色は現在使える色ではありません",
+      "TONE-DARK": "暗",
+      "TONE-NORMAL": "標準",
+      "TONE-LIGHT": "明",
+      "TONE-UNOBTAINABLE": "入手不可"
+    }
   },
   "MAP-SETTINGS": {
     "TITLE": "設定",

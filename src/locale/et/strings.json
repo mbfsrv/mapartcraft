@@ -72,7 +72,26 @@
     "BEST-RESOLUTION-TT": "Sellise resolutsiooniga pilt töötab kõige paremini",
     "ASPECT-RATIO-MISMATCH-TT": "Pildi külgede suhe ei ühtu kaardi omaga",
     "SCALE-MINUS-TT": "Tee eelvaade väiksemaks",
-    "SCALE-PLUS-TT": "Tee eelvaade suuremaks"
+    "SCALE-PLUS-TT": "Tee eelvaade suuremaks",
+    "CHANGE-IMAGE": null,
+    "EDITOR": {
+      "PEN": null,
+      "PEN-TT": null,
+      "EYEDROPPER": null,
+      "EYEDROPPER-TT": null,
+      "BUCKET": null,
+      "BUCKET-TT": null,
+      "UNDO": null,
+      "UNDO-TT": null,
+      "TRANSPARENT": null,
+      "NO-COLOUR-SELECTED": null,
+      "NO-COLOURS": null,
+      "PICK-FAILED": null,
+      "TONE-DARK": null,
+      "TONE-NORMAL": null,
+      "TONE-LIGHT": null,
+      "TONE-UNOBTAINABLE": null
+    }
   },
   "MAP-SETTINGS": {
     "TITLE": "Sätted",
