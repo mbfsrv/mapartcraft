@@ -12,6 +12,7 @@ import "./blockSelection.css";
 class BlockSelection extends Component {
   state = {
     lastSelectedCustomBlock: null, // {colourSetId, blockId}
+    isHidden: false,
   };
 
   cssRGB(RGBArray) {
@@ -88,10 +89,17 @@ class BlockSelection extends Component {
       handleAddCustomBlock,
       handleDeleteCustomBlock,
     } = this.props;
-    const { lastSelectedCustomBlock } = this.state;
+    const { lastSelectedCustomBlock, isHidden } = this.state;
+    const title = (
+      <div className="blockSelectionHeader">
+        <h2 id="blockselectiontitle">{getLocaleString("BLOCK-SELECTION/TITLE")}</h2>
+        <button type="button" className="blockSelectionHideButton" onClick={() => this.setState({ isHidden: !isHidden })}>
+          {getLocaleString(isHidden ? "BLOCK-SELECTION/SHOW" : "BLOCK-SELECTION/HIDE")}
+        </button>
+      </div>
+    );
     const presetsManagement = (
       <React.Fragment>
-        <h2 id="blockselectiontitle">{getLocaleString("BLOCK-SELECTION/TITLE")}</h2>
         <b>
           {getLocaleString("BLOCK-SELECTION/PRESETS/TITLE")}
           {":"}
@@ -206,15 +214,20 @@ class BlockSelection extends Component {
     );
     return (
       <div className="section blockSelectionDiv">
-        {presetsManagement}
-        {blockSelection}
-        <BlockSelectionAddCustom
-          getLocaleString={getLocaleString}
-          coloursJSON={coloursJSON}
-          onAddCustomBlock={handleAddCustomBlock}
-          onDeleteCustomBlock={handleDeleteCustomBlock}
-          lastSelectedCustomBlock={lastSelectedCustomBlock}
-        />
+        {title}
+        {!isHidden && (
+          <React.Fragment>
+            {presetsManagement}
+            {blockSelection}
+            <BlockSelectionAddCustom
+              getLocaleString={getLocaleString}
+              coloursJSON={coloursJSON}
+              onAddCustomBlock={handleAddCustomBlock}
+              onDeleteCustomBlock={handleDeleteCustomBlock}
+              lastSelectedCustomBlock={lastSelectedCustomBlock}
+            />
+          </React.Fragment>
+        )}
       </div>
     );
   }

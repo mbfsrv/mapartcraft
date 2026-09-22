@@ -50,6 +50,8 @@
       "CARPETS": "Carpetes",
       "GREYSCALE": "Cinzento"
     },
+    "HIDE": null,
+    "SHOW": null,
     "UNSUPPORTED-PAST": "Sem suporte",
     "ADD-CUSTOM": {
       "TITLE": "Adicionar Customizado",

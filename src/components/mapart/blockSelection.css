@@ -18,3 +18,25 @@
   flex-direction: row;
   flex-wrap: wrap;
 }
+
+.blockSelectionHeader {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.6em;
+}
+
+.blockSelectionHideButton {
+  font-family: inherit;
+  font-size: 14px;
+  color: #000;
+  background-color: var(--rebaneGreen);
+  border: 1px solid var(--rebaneGreen);
+  border-radius: 3px;
+  padding: 2px 8px;
+  cursor: pointer;
+}
+
+.blockSelectionHideButton:hover {
+  filter: brightness(1.15);
+}

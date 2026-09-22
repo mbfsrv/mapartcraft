@@ -10,8 +10,6 @@ import MapModes from "./json/mapModes.json";
 import WhereSupportBlocksModes from "./json/whereSupportBlocksModes.json";
 import { EditorTools, getEditorPalette, pixelKeyAt, setPixel, lineCoords, floodFill } from "./pixelEditor";
 
-import IMG_Null from "../../images/null.png";
-import IMG_Textures from "../../images/textures.png";
 import IMG_GridOverlay from "../../images/gridOverlay.png";
 
 import "./mapPreview.css";
@@ -496,7 +494,17 @@ class MapPreview extends Component {
     }
   }
 
+  onCanvasClick = () => {
+    // with no image chosen yet, tapping the preview opens the file dialog
+    if (this.props.uploadedImage_isPlaceholder) {
+      this.fileInputRef.current.click();
+    }
+  };
+
   onCanvasPointerDown = (e) => {
+    if (this.props.uploadedImage_isPlaceholder) {
+      return;
+    }
     // left button paints with the current tool, right button (or Alt+left) is always the eyedropper
     if (![0, 2].includes(e.button) || !this.canEdit()) {
       return;
@@ -707,6 +715,7 @@ class MapPreview extends Component {
       optionValue_showGridOverlay,
       onFileDialogEvent,
       uploadedImage,
+      uploadedImage_isPlaceholder,
     } = this.props;
     const { mapPreviewSizeScale, workerProgress, editorTool } = this.state;
     const palette = this.getEditorPalette();
@@ -717,6 +726,18 @@ class MapPreview extends Component {
           <button type="button" className="changeImageButton" onClick={() => this.fileInputRef.current.click()}>
             {getLocaleString("MAP-PREVIEW/CHANGE-IMAGE")}
           </button>
+          <div className="previewScaleButtons">
+            <Tooltip tooltipText={getLocaleString("MAP-PREVIEW/SCALE-PLUS-TT")}>
+              <button type="button" className="changeImageButton sizeButton" onClick={this.increasePreviewScale}>
+                +
+              </button>
+            </Tooltip>
+            <Tooltip tooltipText={getLocaleString("MAP-PREVIEW/SCALE-MINUS-TT")}>
+              <button type="button" className="changeImageButton sizeButton" onClick={this.decreasePreviewScale}>
+                −
+              </button>
+            </Tooltip>
+          </div>
         </div>
         <input
           type="file"
@@ -740,7 +761,7 @@ class MapPreview extends Component {
             }}
           />
           <canvas
-            className={`mapCanvas mapCanvas_${editorTool.toLowerCase()}`}
+            className={uploadedImage_isPlaceholder ? "mapCanvas mapCanvas_upload" : `mapCanvas mapCanvas_${editorTool.toLowerCase()}`}
             width={128 * optionValue_mapSize_x}
             height={128 * optionValue_mapSize_y}
             ref={this.canvasRef_display}
@@ -748,6 +769,7 @@ class MapPreview extends Component {
               width: `${(mapPreviewSizeScale * 128 * optionValue_mapSize_x).toString()}px`,
               height: `${(mapPreviewSizeScale * 128 * optionValue_mapSize_y).toString()}px`,
             }}
+            onClick={this.onCanvasClick}
             onPointerDown={this.onCanvasPointerDown}
             onPointerMove={this.onCanvasPointerMove}
             onPointerUp={this.onCanvasPointerUp}
@@ -772,34 +794,6 @@ class MapPreview extends Component {
               >
                 {uploadedImage === null ? null : `${uploadedImage.width.toString()}x${uploadedImage.height.toString()}`}
               </small>
-            </Tooltip>
-          </div>
-          <div>
-            <Tooltip tooltipText={getLocaleString("MAP-PREVIEW/SCALE-PLUS-TT")}>
-              <img
-                alt="+"
-                className="sizeButton"
-                src={IMG_Null}
-                style={{
-                  backgroundImage: `url(${IMG_Textures})`,
-                  backgroundPositionX: "-96px",
-                  backgroundPositionY: "-2048px",
-                }}
-                onClick={this.increasePreviewScale}
-              />
-            </Tooltip>
-            <Tooltip tooltipText={getLocaleString("MAP-PREVIEW/SCALE-MINUS-TT")}>
-              <img
-                alt="-"
-                className="sizeButton"
-                src={IMG_Null}
-                style={{
-                  backgroundImage: `url(${IMG_Textures})`,
-                  backgroundPositionX: "-128px",
-                  backgroundPositionY: "-2048px",
-                }}
-                onClick={this.decreasePreviewScale}
-              />
             </Tooltip>
           </div>
         </div>

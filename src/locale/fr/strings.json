@@ -50,6 +50,8 @@
       "GREYSCALE": "Nuance de gris",
       "DELETE-CONFIRM": null
     },
+    "HIDE": null,
+    "SHOW": null,
     "UNSUPPORTED-PAST": "Non supporté",
     "ADD-CUSTOM": {
       "TITLE": null,

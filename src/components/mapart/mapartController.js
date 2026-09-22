@@ -53,6 +53,7 @@ class MapartController extends Component {
     optionValue_extras_moreStaircasingOptions: false,
     uploadedImage: null,
     uploadedImage_baseFilename: null,
+    uploadedImage_isPlaceholder: true,
     presets: [],
     selectedPresetName: "None",
     currentMaterialsData: {
@@ -144,7 +145,7 @@ class MapartController extends Component {
   }.bind(this);
 
   componentDidMount() {
-    this.loadUploadedImageFromURL(IMG_Upload, "mapart");
+    this.loadUploadedImageFromURL(IMG_Upload, "mapart", true);
 
     document.addEventListener("dragover", this.eventListener_dragover);
     document.addEventListener("drop", this.eventListener_drop);
@@ -169,12 +170,13 @@ class MapartController extends Component {
     }
   };
 
-  loadUploadedImageFromURL(imageURL, baseFilename) {
+  loadUploadedImageFromURL(imageURL, baseFilename, isPlaceholder = false) {
     const img = new Image();
     img.onload = () => {
       this.setState({
         uploadedImage: img,
         uploadedImage_baseFilename: baseFilename,
+        uploadedImage_isPlaceholder: isPlaceholder,
       });
     };
     img.src = imageURL;
@@ -769,6 +771,7 @@ class MapartController extends Component {
       optionValue_extras_moreStaircasingOptions,
       uploadedImage,
       uploadedImage_baseFilename,
+      uploadedImage_isPlaceholder,
       presets,
       selectedPresetName,
       currentMaterialsData,
@@ -824,6 +827,7 @@ class MapartController extends Component {
             preProcessingValue_backgroundColourSelect={preProcessingValue_backgroundColourSelect}
             preProcessingValue_backgroundColour={preProcessingValue_backgroundColour}
             uploadedImage={uploadedImage}
+            uploadedImage_isPlaceholder={uploadedImage_isPlaceholder}
             onFileDialogEvent={this.onFileDialogEvent}
             onGetMapMaterials={this.handleSetMapMaterials}
             onMapPreviewWorker_begin={this.onMapPreviewWorker_begin}

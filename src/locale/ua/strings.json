@@ -50,6 +50,8 @@
       "GREYSCALE": "Чорно-біле",
       "DELETE-CONFIRM": null
     },
+    "HIDE": null,
+    "SHOW": null,
     "UNSUPPORTED-PAST": "Unsupported past",
     "ADD-CUSTOM": {
       "TITLE": "Додати кастомний блок",

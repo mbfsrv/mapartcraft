@@ -50,6 +50,8 @@
       "GREYSCALE": null,
       "DELETE-CONFIRM": null
     },
+    "HIDE": null,
+    "SHOW": null,
     "UNSUPPORTED-PAST": null,
     "ADD-CUSTOM": {
       "TITLE": null,

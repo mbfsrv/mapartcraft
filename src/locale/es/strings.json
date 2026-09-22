@@ -50,6 +50,8 @@
       "GREYSCALE": "Grises",
       "DELETE-CONFIRM": "¿Quieres borrar esta plantilla? "
     },
+    "HIDE": null,
+    "SHOW": null,
     "UNSUPPORTED-PAST": "Sin soporte a partir de",
     "ADD-CUSTOM": {
       "TITLE": "Añadir bloques personalizados",

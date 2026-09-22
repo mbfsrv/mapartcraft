@@ -50,6 +50,8 @@
       "CARPETS": "Carpets",
       "GREYSCALE": "Greyscale"
     },
+    "HIDE": "Hide",
+    "SHOW": "Show",
     "UNSUPPORTED-PAST": "Unsupported past",
     "ADD-CUSTOM": {
       "TITLE": "Add Custom",

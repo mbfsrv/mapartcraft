@@ -36,6 +36,11 @@
   cursor: cell;
 }
 
+.mapCanvas_upload {
+  cursor: pointer;
+  touch-action: auto;
+}
+
 .mapPreviewHeader {
   display: flex;
   flex-direction: row;
@@ -156,12 +161,16 @@
   justify-content: space-between;
 }
 
+.previewScaleButtons {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 4px;
+}
+
 .sizeButton {
-  margin-top: 2px;
-  margin-left: 2px;
-  width: 15px;
-  height: 15px;
-  cursor: pointer;
+  display: block;
+  min-width: 2em;
 }
 
 .progress {

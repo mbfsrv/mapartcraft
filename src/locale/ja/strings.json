@@ -50,6 +50,8 @@
       "CARPETS": "カーペット",
       "GREYSCALE": "グレースケール"
     },
+    "HIDE": "非表示",
+    "SHOW": "表示",
     "UNSUPPORTED-PAST": null,
     "ADD-CUSTOM": {
       "TITLE": "カスタムブロックを追加",

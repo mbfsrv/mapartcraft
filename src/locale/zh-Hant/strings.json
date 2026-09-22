@@ -50,6 +50,8 @@
       "GREYSCALE": "灰階",
       "DELETE-CONFIRM": null
     },
+    "HIDE": null,
+    "SHOW": null,
     "UNSUPPORTED-PAST": "不支援的過往",
     "ADD-CUSTOM": {
       "TITLE": "新增自訂方塊",
