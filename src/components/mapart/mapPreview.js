@@ -31,7 +31,9 @@ class MapPreview extends Component {
   editImageData = null; // converted map pixels; the source of truth that the editor modifies
   undoStack = [];
   isConverting = false; // true while the image is being converted from source; editing is blocked
-  strokeLastPixel = null; // last pixel painted in the current pen stroke
+  strokeLastPixel = null; // last pixel under the pointer in the current pen / bucket drag
+  strokeTool = null; // tool used for the current drag
+  strokeBucketSnapshot = null; // pixels before a bucket drag; only pushed to undo if the drag changed something
   UNDO_LIMIT = 30;
 
   mapCanvasWorker = new Worker(MapCanvasWorker);
@@ -520,21 +522,30 @@ class MapPreview extends Component {
       this.showEditorHint("MAP-PREVIEW/EDITOR/NO-COLOUR-SELECTED");
       return;
     }
+    e.currentTarget.setPointerCapture(e.pointerId);
+    this.strokeLastPixel = pixel;
+    this.strokeTool = editorTool;
     if (editorTool === EditorTools.BUCKET) {
-      const before = new Uint8ClampedArray(this.editImageData.data);
-      if (floodFill(this.editImageData, x, y, paletteEntry)) {
-        this.pushUndo(before);
-        this.canvasRef_display.current.getContext("2d").putImageData(this.editImageData, 0, 0);
-        this.updateMaterials_edited();
-      }
+      // holding and dragging keeps filling every area the pointer passes over; the whole drag is one undo step
+      this.strokeBucketSnapshot = new Uint8ClampedArray(this.editImageData.data);
+      this.bucketFillPixels([pixel], paletteEntry);
       return;
     }
     // pen
     this.pushUndo();
-    e.currentTarget.setPointerCapture(e.pointerId);
-    this.strokeLastPixel = pixel;
     this.paintPixels([pixel], paletteEntry);
   };
+
+  bucketFillPixels(coords, paletteEntry) {
+    let changed = false;
+    for (const [x, y] of coords) {
+      // floodFill returns immediately for pixels that already have the fill colour, so dragging over filled areas is cheap
+      changed = floodFill(this.editImageData, x, y, paletteEntry) || changed;
+    }
+    if (changed) {
+      this.canvasRef_display.current.getContext("2d").putImageData(this.editImageData, 0, 0);
+    }
+  }
 
   onCanvasPointerMove = (e) => {
     if (this.strokeLastPixel === null || !this.canEdit()) {
@@ -553,7 +564,11 @@ class MapPreview extends Component {
     if (x0 === x1 && y0 === y1) {
       return;
     }
-    this.paintPixels(lineCoords(x0, y0, x1, y1), paletteEntry);
+    if (this.strokeTool === EditorTools.BUCKET) {
+      this.bucketFillPixels(lineCoords(x0, y0, x1, y1), paletteEntry);
+    } else {
+      this.paintPixels(lineCoords(x0, y0, x1, y1), paletteEntry);
+    }
     this.strokeLastPixel = pixel;
   };
 
@@ -561,10 +576,22 @@ class MapPreview extends Component {
     if (this.strokeLastPixel === null) {
       return;
     }
+    const strokeTool = this.strokeTool;
+    const snapshot = this.strokeBucketSnapshot;
     this.strokeLastPixel = null;
-    if (this.canEdit()) {
-      this.updateMaterials_edited();
+    this.strokeTool = null;
+    this.strokeBucketSnapshot = null;
+    if (!this.canEdit()) {
+      return;
     }
+    if (strokeTool === EditorTools.BUCKET) {
+      const data = this.editImageData.data;
+      if (snapshot.every((value, i) => value === data[i])) {
+        return; // nothing was filled
+      }
+      this.pushUndo(snapshot);
+    }
+    this.updateMaterials_edited();
   };
 
   onEditorToolChange = (tool) => {

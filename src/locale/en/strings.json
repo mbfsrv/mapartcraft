@@ -80,7 +80,7 @@
       "EYEDROPPER": "Eyedropper",
       "EYEDROPPER-TT": "Pick a colour from the map",
       "BUCKET": "Bucket",
-      "BUCKET-TT": "Fill the connected area of the same colour",
+      "BUCKET-TT": "Fill the connected area of the same colour (hold and drag to keep filling)",
       "UNDO": "Undo",
       "UNDO-TT": "Undo last edit (Ctrl+Z)",
       "TRANSPARENT": "Transparent",
