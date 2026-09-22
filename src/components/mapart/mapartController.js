@@ -43,7 +43,7 @@ class MapartController extends Component {
     optionValue_mapdatFilenameUseId: true,
     optionValue_mapdatFilenameIdStart: 0,
     optionValue_betterColour: true,
-    optionValue_dithering: DitherMethods.FloydSteinberg.uniqueId,
+    optionValue_dithering: DitherMethods.None.uniqueId,
     optionValue_preprocessingEnabled: false,
     preProcessingValue_brightness: 100,
     preProcessingValue_contrast: 100,
@@ -98,11 +98,19 @@ class MapartController extends Component {
       this.state.optionValue_version = supportedVersionFound;
     }
 
+    // select the "Everything" preset by default
+    const defaultPreset = this.state.presets.find((preset) => preset.localeKey === "BLOCK-SELECTION/PRESETS/EVERYTHING");
+    if (defaultPreset !== undefined) {
+      this.state.selectedBlocks = this.getSelectedBlocksFromPreset(defaultPreset.blocks, this.state.coloursJSON, this.state.optionValue_version);
+      this.state.selectedPresetName = defaultPreset.name;
+    }
+
     const URLParams = new URL(window.location).searchParams;
     if (URLParams.has("preset")) {
       const decodedPresetBlocks = this.URLToPreset(URLParams.get("preset"));
       if (decodedPresetBlocks !== null) {
         this.state.selectedBlocks = decodedPresetBlocks;
+        this.state.selectedPresetName = "None";
       }
     }
   }
@@ -192,6 +200,12 @@ class MapartController extends Component {
 
   handleChangeColourSetBlocks = (setsAndBlocks) => {
     const { coloursJSON, optionValue_version } = this.state;
+    this.setState({
+      selectedBlocks: this.getSelectedBlocksFromPreset(setsAndBlocks, coloursJSON, optionValue_version),
+    });
+  };
+
+  getSelectedBlocksFromPreset = (setsAndBlocks, coloursJSON, optionValue_version) => {
     let selectedBlocks = {};
     for (const colourSetId of Object.keys(coloursJSON)) {
       selectedBlocks[colourSetId] = "-1";
@@ -211,9 +225,7 @@ class MapartController extends Component {
         selectedBlocks[colourSetId] = blockId;
       }
     }
-    this.setState({
-      selectedBlocks,
-    });
+    return selectedBlocks;
   };
 
   onOptionChange_modeNBTOrMapdat = (e) => {
