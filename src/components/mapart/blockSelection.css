@@ -35,6 +35,13 @@
   border-radius: 3px;
   padding: 2px 8px;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.blockSelectionHideIcon {
+  flex-shrink: 0;
 }
 
 .blockSelectionHideButton:hover {

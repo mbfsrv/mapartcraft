@@ -76,6 +76,16 @@
   cursor: default;
 }
 
+.pixelEditorButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.pixelEditorIcon {
+  flex-shrink: 0;
+}
+
 .pixelEditorButton_selected {
   background-color: #688e6b;
   border-color: #fff;

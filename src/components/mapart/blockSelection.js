@@ -9,6 +9,28 @@ import SupportedVersions from "./json/supportedVersions.json";
 
 import "./blockSelection.css";
 
+// eye icon for the hide / show toggle; crossed out while the button would hide the list
+function EyeIcon({ crossed }) {
+  return (
+    <svg
+      className="blockSelectionHideIcon"
+      viewBox="0 0 24 24"
+      width="16"
+      height="16"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z" />
+      <circle cx="12" cy="12" r="3" />
+      {crossed && <path d="m3 3 18 18" />}
+    </svg>
+  );
+}
+
 class BlockSelection extends Component {
   state = {
     lastSelectedCustomBlock: null, // {colourSetId, blockId}
@@ -94,6 +116,7 @@ class BlockSelection extends Component {
       <div className="blockSelectionHeader">
         <h2 id="blockselectiontitle">{getLocaleString("BLOCK-SELECTION/TITLE")}</h2>
         <button type="button" className="blockSelectionHideButton" onClick={() => this.setState({ isHidden: !isHidden })}>
+          <EyeIcon crossed={!isHidden} />
           {getLocaleString(isHidden ? "BLOCK-SELECTION/SHOW" : "BLOCK-SELECTION/HIDE")}
         </button>
       </div>

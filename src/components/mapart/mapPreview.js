@@ -14,6 +14,56 @@ import IMG_GridOverlay from "../../images/gridOverlay.png";
 
 import "./mapPreview.css";
 
+// inline icons for the editor toolbar buttons; stroke follows the button text colour
+const editorIcons = {
+  [EditorTools.PEN]: (
+    <>
+      <path d="M12 20h9" />
+      <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" />
+    </>
+  ),
+  [EditorTools.EYEDROPPER]: (
+    <>
+      <path d="m2 22 1-1h3l9-9" />
+      <path d="M3 21v-3l9-9" />
+      <path d="m15 6 3.4-3.4a2.1 2.1 0 1 1 3 3L18 9l.4.4a2.1 2.1 0 1 1-3 3l-3.8-3.8a2.1 2.1 0 1 1 3-3l.4.4Z" />
+    </>
+  ),
+  [EditorTools.BUCKET]: (
+    <>
+      <path d="m19 11-8-8-8.6 8.6a2 2 0 0 0 0 2.8l5.2 5.2c.8.8 2 .8 2.8 0L19 11Z" />
+      <path d="m5 2 5 5" />
+      <path d="M2 13h15" />
+      <path d="M22 20a2 2 0 1 1-4 0c0-1.6 1.7-2.4 2-4 .3 1.6 2 2.4 2 4Z" />
+    </>
+  ),
+  UNDO: (
+    <>
+      <path d="M9 14 4 9l5-5" />
+      <path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11" />
+    </>
+  ),
+};
+
+function EditorIcon({ name }) {
+  return (
+    <svg
+      className="pixelEditorIcon"
+      viewBox="0 0 24 24"
+      width="16"
+      height="16"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      {editorIcons[name]}
+    </svg>
+  );
+}
+
 class MapPreview extends Component {
   state = {
     mapPreviewSizeScale: 2,
@@ -661,10 +711,12 @@ class MapPreview extends Component {
               title={getLocaleString(tooltipKey)}
               onClick={() => this.onEditorToolChange(tool)}
             >
+              <EditorIcon name={tool} />
               {getLocaleString(labelKey)}
             </button>
           ))}
           <button type="button" className="pixelEditorButton" title={getLocaleString("MAP-PREVIEW/EDITOR/UNDO-TT")} disabled={undoCount === 0} onClick={this.handleUndo}>
+            <EditorIcon name="UNDO" />
             {getLocaleString("MAP-PREVIEW/EDITOR/UNDO")}
           </button>
           <span
