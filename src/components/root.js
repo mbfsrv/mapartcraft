@@ -62,7 +62,7 @@ class Root extends Component {
     return (
       <React.Fragment>
         <div className="titleAndLanguages">
-          <span><h1>MapartCraft</h1>{this.props.match.params.countryCode && this.props.match.params.countryCode !== "en" && <small>{this.getLocaleString("TRANSLATION/CREDITS")}</small>}</span>
+          <span><h1>MapartCraft</h1>{this.props.match.params.countryCode && this.props.match.params.countryCode !== "en" && <small>{this.getLocaleString("TRANSLATION/CREDITS")}</small>}<br /><span className="patchedBy">Patched by yamak493</span></span>
           <Languages />
         </div>
         <Header getLocaleString={this.getLocaleString} countryCode={this.props.match.params.countryCode} />
