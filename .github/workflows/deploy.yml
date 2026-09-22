@@ -33,7 +33,7 @@ jobs:
           # react-scripts 4 (webpack 4) は Node 17+ で OpenSSL のレガシープロバイダが必要
           NODE_OPTIONS: --openssl-legacy-provider
 
-      # BrowserRouter で /mapartcraft/faq などに直接アクセスした時のフォールバック
+      # BrowserRouter で /ja/faq などに直接アクセスした時のフォールバック
       - run: cp build/index.html build/404.html
 
       - uses: actions/upload-pages-artifact@v5
