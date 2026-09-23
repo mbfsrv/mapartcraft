@@ -276,7 +276,7 @@ class Map_NBT {
         },
         author: {
           type: TagTypes.string,
-          value: "rebane2001.com/mapartcraft",
+          value: "map-art.made-by-free.com",
         },
         DataVersion: {
           type: TagTypes.int,

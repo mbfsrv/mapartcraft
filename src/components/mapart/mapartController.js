@@ -637,7 +637,7 @@ class MapartController extends Component {
           });
       }
     }
-    return "https://rebane2001.com/mapartcraft/?preset=" + presetQueryString;
+    return "https://map-art.made-by-free.com/?preset=" + presetQueryString;
   };
 
   handleSharePreset = () => {
