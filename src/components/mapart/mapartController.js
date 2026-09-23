@@ -7,6 +7,7 @@ import MapPreview from "./mapPreview";
 import MapSettings from "./mapSettings";
 import Materials from "./materials";
 import coloursJSON from "./json/coloursJSON.json";
+import getMapartFromNBTFile from "./nbtImport";
 import ViewOnline2D from "./viewOnline2D/viewOnline2D";
 import ViewOnline3D from "./viewOnline3D/viewOnline3D";
 
@@ -54,6 +55,7 @@ class MapartController extends Component {
     uploadedImage: null,
     uploadedImage_baseFilename: null,
     uploadedImage_isPlaceholder: true,
+    uploadedImage_exactPixels: null, // ImageData of a mapart restored from .nbt; used instead of reading uploadedImage back from a canvas
     presets: [],
     selectedPresetName: "None",
     currentMaterialsData: {
@@ -130,14 +132,21 @@ class MapartController extends Component {
     e.stopPropagation();
   };
 
+  loadUploadedFile(file, baseFilename) {
+    // a dropped / pasted / chosen file is either an image to convert, or a schematic to restore a previous mapart from
+    if (/\.nbt$/i.test(file.name)) {
+      this.loadUploadedNBTFile(file, file.name.replace(/\.[^/.]+$/, ""));
+    } else {
+      this.loadUploadedImageFromURL(URL.createObjectURL(file), baseFilename);
+    }
+  }
+
   eventListener_drop = function (e) {
     e.preventDefault();
     e.stopPropagation();
     const files = e.dataTransfer.files;
     if (files.length) {
-      const file = files[0];
-      const imgUrl = URL.createObjectURL(file);
-      this.loadUploadedImageFromURL(imgUrl, "mapart");
+      this.loadUploadedFile(files[0], "mapart");
     }
   }.bind(this);
 
@@ -146,9 +155,7 @@ class MapartController extends Component {
     e.stopPropagation();
     const files = e.clipboardData.files;
     if (files.length) {
-      const file = files[0];
-      const imgUrl = URL.createObjectURL(file);
-      this.loadUploadedImageFromURL(imgUrl, "mapart");
+      this.loadUploadedFile(files[0], "mapart");
     }
   }.bind(this);
 
@@ -173,8 +180,7 @@ class MapartController extends Component {
       return;
     } else {
       const file = files[0];
-      const imgUrl = URL.createObjectURL(file);
-      this.loadUploadedImageFromURL(imgUrl, file.name.replace(/\.[^/.]+$/, ""));
+      this.loadUploadedFile(file, file.name.replace(/\.[^/.]+$/, ""));
     }
   };
 
@@ -185,9 +191,84 @@ class MapartController extends Component {
         uploadedImage: img,
         uploadedImage_baseFilename: baseFilename,
         uploadedImage_isPlaceholder: isPlaceholder,
+        uploadedImage_exactPixels: null,
       });
     };
     img.src = imageURL;
+  }
+
+  loadUploadedNBTFile(file, baseFilename) {
+    const { getLocaleString } = this.props;
+    const { coloursJSON, optionValue_version, optionValue_staircasing } = this.state;
+    let fileReader = new FileReader();
+    fileReader.onerror = () => {
+      alert(getLocaleString("MAP-PREVIEW/NBT-UPLOAD/ERROR-UNREADABLE"));
+    };
+    fileReader.onload = () => {
+      const mapartFromNBT = getMapartFromNBTFile(fileReader.result, coloursJSON, optionValue_version, optionValue_staircasing);
+      if ("error" in mapartFromNBT) {
+        alert(getLocaleString(mapartFromNBT.error));
+        return;
+      }
+      this.restoreMapartFromNBT(mapartFromNBT, baseFilename);
+    };
+    fileReader.readAsArrayBuffer(file);
+  }
+
+  restoreMapartFromNBT(mapartFromNBT, baseFilename) {
+    const { getLocaleString } = this.props;
+    const { imageData, mapSize_x, mapSize_y, MCVersion, optionValue_staircasing, optionValue_supportBlock, selectedBlocks, unknownBlocksCount } =
+      mapartFromNBT;
+    const version = Object.values(SupportedVersions).find((supportedVersion) => supportedVersion.MCVersion === MCVersion);
+
+    // the pixels are exact palette colours already, so with dithering and preprocessing off the conversion maps each one to itself
+    let canvas = document.createElement("canvas");
+    canvas.width = imageData.width;
+    canvas.height = imageData.height;
+    canvas.getContext("2d").putImageData(imageData, 0, 0);
+    const img = new Image();
+    img.onload = () => {
+      this.setState((currentState) => {
+        let selectedBlocks_new = {};
+        for (const [colourSetId, blockId] of Object.entries(currentState.selectedBlocks)) {
+          // as in onOptionChange_version, blocks that don't exist in the schematic's version have to go
+          selectedBlocks_new[colourSetId] =
+            blockId !== "-1" && !Object.keys(currentState.coloursJSON[colourSetId].blocks[blockId].validVersions).includes(MCVersion) ? "-1" : blockId;
+        }
+        for (const [colourSetId, blockId] of Object.entries(selectedBlocks)) {
+          selectedBlocks_new[colourSetId] = blockId;
+        }
+        return {
+          uploadedImage: img,
+          uploadedImage_baseFilename: baseFilename,
+          uploadedImage_isPlaceholder: false,
+          uploadedImage_exactPixels: imageData,
+          selectedBlocks: selectedBlocks_new,
+          selectedPresetName: "None",
+          optionValue_version: version,
+          optionValue_modeNBTOrMapdat: MapModes.SCHEMATIC_NBT.uniqueId,
+          optionValue_mapSize_x: mapSize_x,
+          optionValue_mapSize_y: mapSize_y,
+          optionValue_cropImage: CropModes.OFF.uniqueId,
+          optionValue_cropImage_zoom: 10,
+          optionValue_cropImage_percent_x: 50,
+          optionValue_cropImage_percent_y: 50,
+          optionValue_staircasing: optionValue_staircasing,
+          optionValue_supportBlock: optionValue_supportBlock === null ? currentState.optionValue_supportBlock : optionValue_supportBlock,
+          optionValue_dithering: DitherMethods.None.uniqueId,
+          optionValue_preprocessingEnabled: false,
+        };
+      });
+      CookieManager.setCookie("mapartcraft_mcversion", MCVersion);
+      if (unknownBlocksCount !== 0) {
+        alert(
+          `${getLocaleString("MAP-PREVIEW/NBT-UPLOAD/WARNING-UNKNOWN-BLOCKS-1")}${unknownBlocksCount.toString()}${getLocaleString(
+            "MAP-PREVIEW/NBT-UPLOAD/WARNING-UNKNOWN-BLOCKS-2"
+          )}`
+        );
+      }
+    };
+    img.src = canvas.toDataURL();
   }
 
   handleChangeColourSetBlock = (colourSetId, blockId) => {
@@ -784,6 +865,7 @@ class MapartController extends Component {
       uploadedImage,
       uploadedImage_baseFilename,
       uploadedImage_isPlaceholder,
+      uploadedImage_exactPixels,
       presets,
       selectedPresetName,
       currentMaterialsData,
@@ -840,6 +922,7 @@ class MapartController extends Component {
             preProcessingValue_backgroundColour={preProcessingValue_backgroundColour}
             uploadedImage={uploadedImage}
             uploadedImage_isPlaceholder={uploadedImage_isPlaceholder}
+            uploadedImage_exactPixels={uploadedImage_exactPixels}
             onFileDialogEvent={this.onFileDialogEvent}
             onGetMapMaterials={this.handleSetMapMaterials}
             onMapPreviewWorker_begin={this.onMapPreviewWorker_begin}

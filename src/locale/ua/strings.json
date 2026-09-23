@@ -93,6 +93,15 @@
       "TONE-NORMAL": null,
       "TONE-LIGHT": null,
       "TONE-UNOBTAINABLE": null
+    },
+    "NBT-UPLOAD": {
+      "LOAD": null,
+      "LOAD-TT": null,
+      "ERROR-UNREADABLE": null,
+      "ERROR-NOT-MAPART": null,
+      "ERROR-TOO-BIG": null,
+      "WARNING-UNKNOWN-BLOCKS-1": null,
+      "WARNING-UNKNOWN-BLOCKS-2": null
     }
   },
   "MAP-SETTINGS": {

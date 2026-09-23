@@ -91,6 +91,7 @@ class MapPreview extends Component {
     this.canvasRef_source = createRef(); // hidden source canvas that at all times contains the uploaded image
     this.canvasRef_display = createRef(); // display canvas that displays to the user, may be pixels, may be image
     this.fileInputRef = createRef();
+    this.nbtInputRef = createRef();
   }
 
   shouldCanvasUpdate_source(prevProps, newProps, prevState, newState) {
@@ -321,9 +322,27 @@ class MapPreview extends Component {
     }
   }
 
+  getSourceImageData() {
+    const { optionValue_cropImage, optionValue_preprocessingEnabled, uploadedImage_exactPixels } = this.props;
+    const ctx_source = this.canvasRef_source.current.getContext("2d", { willReadFrequently: true });
+    const { width, height } = ctx_source.canvas;
+    if (
+      uploadedImage_exactPixels !== null &&
+      uploadedImage_exactPixels.width === width &&
+      uploadedImage_exactPixels.height === height &&
+      optionValue_cropImage === CropModes.OFF.uniqueId &&
+      !optionValue_preprocessingEnabled
+    ) {
+      // pixels restored from a .nbt are exact palette colours. reading them back from the canvas can be off by one in browsers
+      // that add anti-fingerprinting noise, which is enough to swap near-identical colours (magenta / purple terracotta)
+      return uploadedImage_exactPixels;
+    }
+    return ctx_source.getImageData(0, 0, width, height);
+  }
+
   updateCanvas_display() {
     this.mapCanvasWorker.terminate();
-    const { canvasRef_source, canvasRef_display } = this;
+    const { canvasRef_display } = this;
     const {
       coloursJSON,
       selectedBlocks,
@@ -339,8 +358,7 @@ class MapPreview extends Component {
       onGetMapMaterials,
       onMapPreviewWorker_begin,
     } = this.props;
-    const ctx_source = canvasRef_source.current.getContext("2d", { willReadFrequently: true });
-    const canvasImageData = ctx_source.getImageData(0, 0, ctx_source.canvas.width, ctx_source.canvas.height);
+    const canvasImageData = this.getSourceImageData();
     const t0 = performance.now();
     this.mapCanvasWorker = new Worker(MapCanvasWorker);
     this.mapCanvasWorker.onmessage = (e) => {
@@ -778,6 +796,11 @@ class MapPreview extends Component {
           <button type="button" className="changeImageButton" onClick={() => this.fileInputRef.current.click()}>
             {getLocaleString("MAP-PREVIEW/CHANGE-IMAGE")}
           </button>
+          <Tooltip tooltipText={getLocaleString("MAP-PREVIEW/NBT-UPLOAD/LOAD-TT")}>
+            <button type="button" className="changeImageButton" onClick={() => this.nbtInputRef.current.click()}>
+              {getLocaleString("MAP-PREVIEW/NBT-UPLOAD/LOAD")}
+            </button>
+          </Tooltip>
           <div className="previewScaleButtons">
             <Tooltip tooltipText={getLocaleString("MAP-PREVIEW/SCALE-PLUS-TT")}>
               <button type="button" className="changeImageButton sizeButton" onClick={this.increasePreviewScale}>
@@ -799,6 +822,16 @@ class MapPreview extends Component {
           onChange={(e) => {
             onFileDialogEvent(e);
             e.target.value = ""; // allow choosing the same file again
+          }}
+        />
+        <input
+          type="file"
+          accept=".nbt"
+          className="imgUpload"
+          ref={this.nbtInputRef}
+          onChange={(e) => {
+            onFileDialogEvent(e);
+            e.target.value = "";
           }}
         />
         <div>

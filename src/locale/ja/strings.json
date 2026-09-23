@@ -93,6 +93,15 @@
       "TONE-NORMAL": "標準",
       "TONE-LIGHT": "明",
       "TONE-UNOBTAINABLE": "入手不可"
+    },
+    "NBT-UPLOAD": {
+      "LOAD": ".nbtを読み込む",
+      "LOAD-TT": "スキマティック(.nbt)をプレビューに復元して、もう一度編集できるようにします",
+      "ERROR-UNREADABLE": "このファイルをNBTとして読み込めませんでした。",
+      "ERROR-NOT-MAPART": "この.nbtファイルはマップアートのスキマティックではないようです。",
+      "ERROR-TOO-BIG": "このスキマティックは大きすぎて読み込めません。",
+      "WARNING-UNKNOWN-BLOCKS-1": "スキマティックのうち ",
+      "WARNING-UNKNOWN-BLOCKS-2": " ピクセルはMapartCraftが知らないブロックのため、黒に最も近い色で埋めました。必要に応じて塗り直してください。"
     }
   },
   "MAP-SETTINGS": {

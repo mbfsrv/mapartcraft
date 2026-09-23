@@ -93,6 +93,15 @@
       "TONE-NORMAL": "normal",
       "TONE-LIGHT": "light",
       "TONE-UNOBTAINABLE": "unobtainable"
+    },
+    "NBT-UPLOAD": {
+      "LOAD": "Load .nbt",
+      "LOAD-TT": "Load a schematic back into the preview so you can edit it again",
+      "ERROR-UNREADABLE": "That file could not be read as NBT.",
+      "ERROR-NOT-MAPART": "That .nbt file does not look like a mapart schematic.",
+      "ERROR-TOO-BIG": "That schematic is too big to load.",
+      "WARNING-UNKNOWN-BLOCKS-1": "",
+      "WARNING-UNKNOWN-BLOCKS-2": " pixels of the schematic use blocks MapartCraft does not know; they have been filled with the colour closest to black. Repaint them if needed."
     }
   },
   "MAP-SETTINGS": {
