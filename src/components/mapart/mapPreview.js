@@ -1,7 +1,10 @@
 import React, { Component, createRef } from "react";
 
 import Tooltip from "../tooltip";
-import MapCanvasWorker from "./workers/mapCanvas.jsworker"; // FINALLY got this to work; .js gets imported as code, anything else as URL
+// .js gets imported as code, anything else as URL. the URL has to end in .js though: static hosts (GitHub Pages) serve .jsworker as
+// application/octet-stream, and Firefox refuses to run a worker script with a non-JavaScript MIME type
+// eslint-disable-next-line import/no-webpack-loader-syntax
+import MapCanvasWorker from "!!file-loader?name=static/media/[name].[hash:8].js!./workers/mapCanvas.jsworker";
 
 import BackgroundColourModes from "./json/backgroundColourModes.json";
 import CropModes from "./json/cropModes.json";

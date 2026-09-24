@@ -7,7 +7,9 @@ import Tooltip from "../tooltip";
 import MapModes from "./json/mapModes.json";
 import WhereSupportBlocksModes from "./json/whereSupportBlocksModes.json";
 
-import NBTWorker from "./workers/nbt.jsworker";
+// emitted as .js so that it is served with a JavaScript MIME type; see mapPreview.js
+// eslint-disable-next-line import/no-webpack-loader-syntax
+import NBTWorker from "!!file-loader?name=static/media/[name].[hash:8].js!./workers/nbt.jsworker";
 
 import "./greenButtons.css";
 
