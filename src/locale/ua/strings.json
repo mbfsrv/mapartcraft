@@ -4,7 +4,10 @@
     "CREDITS": "Translated by: Dacoconutchemist"
   },
   "HEAD-META-TAGS": {
-    "DESCRIPTION": "Генератор схематик мапартів і файлів map.dat для Minecraft"
+    "LANGUAGE-TAG": "uk",
+    "OG-LOCALE": "uk_UA",
+    "TITLE": "MapartCraft – генератор мапартів для Minecraft: схематика та map.dat",
+    "DESCRIPTION": "Безкоштовний генератор мапартів для Minecraft, що працює у браузері. Перетворіть будь-яке зображення на NBT-схематику або файли map.dat з дитерингом, 3D-ступінчатістю та списком матеріалів."
   },
   "FAQ": {
     "FAQ": "FAQ",

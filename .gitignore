@@ -13,3 +13,6 @@ __pycache__/
 /gitignore Extras
 
 *.nbt
+
+.agents
+skills-lock.json

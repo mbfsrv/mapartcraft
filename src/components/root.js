@@ -45,6 +45,27 @@ class Root extends Component {
     }
   };
 
+  componentDidMount() {
+    this.updateHeadMetaTags();
+  }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.match.params.countryCode !== this.props.match.params.countryCode) {
+      this.updateHeadMetaTags();
+    }
+  }
+
+  // keep <html lang>, title and description in sync when switching language without a page load;
+  // each language page is also written with these values at build time by scripts/seo/generate.js
+  updateHeadMetaTags = () => {
+    document.documentElement.lang = this.getLocaleString("HEAD-META-TAGS/LANGUAGE-TAG");
+    document.title = this.getLocaleString("HEAD-META-TAGS/TITLE");
+    const metaDescription = document.querySelector('meta[name="description"]');
+    if (metaDescription !== null) {
+      metaDescription.setAttribute("content", this.getLocaleString("HEAD-META-TAGS/DESCRIPTION"));
+    }
+  };
+
   onEdgeWarningButtonClick = () => {
     this.setState({ displayingEdgeWarning: false });
   };

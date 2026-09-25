@@ -4,7 +4,10 @@
     "CREDITS": "Tõlge: popstonia"
   },
   "HEAD-META-TAGS": {
-    "DESCRIPTION": "Minecrafti kaardikunsti schematic'u ja map.dat failide generaator."
+    "LANGUAGE-TAG": "et",
+    "OG-LOCALE": "et_EE",
+    "TITLE": "MapartCraft – Minecrafti kaardikunsti generaator: schematic ja map.dat",
+    "DESCRIPTION": "Tasuta brauseris töötav Minecrafti kaardikunsti generaator. Muuda mis tahes pilt NBT schematic'uks või map.dat failideks – koos värelemise, 3D-trepitamise ja materjalide nimekirjaga."
   },
   "FAQ": {
     "FAQ": "KKK",

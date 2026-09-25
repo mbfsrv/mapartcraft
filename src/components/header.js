@@ -22,7 +22,7 @@ class Header extends Component {
     return (
       <div className="header">
         <h3>
-          <Link to={`/${![undefined, "en"].includes(this.props.countryCode) ? this.props.countryCode + "/" : ""}faq`}>
+          <Link to={`/${![undefined, "en"].includes(this.props.countryCode) ? this.props.countryCode + "/" : ""}faq/`}>
             <span className="FAQTextButton">{getLocaleString("FAQ/FAQ")}</span>
           </Link>
           <span> | </span>
@@ -83,7 +83,7 @@ class Header extends Component {
           <br></br>
           <b>
             {getLocaleString("FAQ/PLEASE-READ-1")}
-            <Link to={`/${![undefined, "en"].includes(this.props.countryCode) ? this.props.countryCode + "/" : ""}faq`}>
+            <Link to={`/${![undefined, "en"].includes(this.props.countryCode) ? this.props.countryCode + "/" : ""}faq/`}>
               <span className="FAQTextButton">{getLocaleString("FAQ/FAQ")}</span>
             </Link>
             {getLocaleString("FAQ/PLEASE-READ-2")}

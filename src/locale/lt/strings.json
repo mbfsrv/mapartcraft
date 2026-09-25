@@ -4,7 +4,10 @@
     "CREDITS": "Translecija nuo: NebulaViper"
   },
   "HEAD-META-TAGS": {
-    "DESCRIPTION": null
+    "LANGUAGE-TAG": "lt",
+    "OG-LOCALE": "lt_LT",
+    "TITLE": "MapartCraft – Minecraft žemėlapių meno generatorius: schematic ir map.dat",
+    "DESCRIPTION": "Nemokamas naršyklėje veikiantis Minecraft žemėlapių meno (mapart) generatorius. Paverskite bet kokį paveikslėlį NBT schematic arba map.dat failais – su ditheringu, 3D laiptavimu ir medžiagų sąrašu."
   },
   "FAQ": {
     "FAQ": "DKK",

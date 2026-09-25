@@ -4,7 +4,10 @@
     "CREDITS": "Übersetzung: Prismary, Number1Princess"
   },
   "HEAD-META-TAGS": {
-    "DESCRIPTION": null
+    "LANGUAGE-TAG": "de",
+    "OG-LOCALE": "de_DE",
+    "TITLE": "MapartCraft – Minecraft Mapart-Generator: Schematic & map.dat",
+    "DESCRIPTION": "Kostenloser Minecraft-Mapart-Generator im Browser. Wandle beliebige Bilder in NBT-Schematics oder map.dat-Dateien um – mit Dithering, 3D-Staircasing und Materialliste."
   },
   "FAQ": {
     "FAQ": "FAQ",

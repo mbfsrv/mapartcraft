@@ -4,7 +4,10 @@
     "CREDITS": "Traduzione di psvigia"
   },
   "HEAD-META-TAGS": {
-    "DESCRIPTION": null
+    "LANGUAGE-TAG": "it",
+    "OG-LOCALE": "it_IT",
+    "TITLE": "MapartCraft – Generatore di mapart per Minecraft: schematic e map.dat",
+    "DESCRIPTION": "Generatore gratuito di mapart per Minecraft che funziona nel browser. Converti qualsiasi immagine in uno schematic NBT o in file map.dat, con dithering, staircasing 3D e lista dei materiali."
   },
   "FAQ": {
     "FAQ": "FAQ",

@@ -4,7 +4,10 @@
     "CREDITS": "翻譯自: OSC311, SiderealArt"
   },
   "HEAD-META-TAGS": {
-    "DESCRIPTION": "一個 Minecraft 地圖畫 schematic 及 map.dat 產生器"
+    "LANGUAGE-TAG": "zh-Hant",
+    "OG-LOCALE": "zh_TW",
+    "TITLE": "MapartCraft – Minecraft 地圖畫產生器（schematic 與 map.dat）",
+    "DESCRIPTION": "免費的 Minecraft 地圖畫產生器，直接在瀏覽器中執行。可將任何圖片轉換為 NBT schematic 或 map.dat 檔案，支援抖動、3D 階層化與材料清單。"
   },
   "FAQ": {
     "FAQ": "常見問題",

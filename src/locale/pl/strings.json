@@ -4,7 +4,10 @@
     "CREDITS": "Przetłumaczone przez: hipostajm"
   },
   "HEAD-META-TAGS": {
-    "DESCRIPTION": "Minecraftowy generator mapartów używający plików schematic i map.dat"
+    "LANGUAGE-TAG": "pl",
+    "OG-LOCALE": "pl_PL",
+    "TITLE": "MapartCraft – generator mapartów do Minecrafta: schematic i map.dat",
+    "DESCRIPTION": "Darmowy generator mapartów do Minecrafta działający w przeglądarce. Zamień dowolny obraz w schematic NBT lub pliki map.dat – z ditheringiem, schodkowaniem 3D i listą materiałów."
   },
   "FAQ": {
     "FAQ": "FAQ",

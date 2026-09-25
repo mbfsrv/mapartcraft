@@ -4,7 +4,10 @@
     "CREDITS": "Traduko de: Ajno"
   },
   "HEAD-META-TAGS": {
-    "DESCRIPTION": null
+    "LANGUAGE-TAG": "eo",
+    "OG-LOCALE": "eo",
+    "TITLE": "MapartCraft – Minecraft-a mapart-generilo: schematic kaj map.dat",
+    "DESCRIPTION": "Senpaga Minecraft-a mapart-generilo, kiu funkcias en via retumilo. Konvertu ajnan bildon al NBT-schematic aŭ map.dat-dosieroj, kun konfuzado, 3D-ŝtupigado kaj listo de materialoj."
   },
   "FAQ": {
     "FAQ": "OD",

@@ -4,7 +4,10 @@
     "CREDITS": "Translated by: Wanadi"
   },
   "HEAD-META-TAGS": {
-    "DESCRIPTION": "Um gerador de esquemas e arquivos map.dat do Minecraft"
+    "LANGUAGE-TAG": "pt-BR",
+    "OG-LOCALE": "pt_BR",
+    "TITLE": "MapartCraft – Gerador de mapart para Minecraft: schematic e map.dat",
+    "DESCRIPTION": "Gerador gratuito de mapart para Minecraft que roda no navegador. Converta qualquer imagem em um esquema NBT ou em arquivos map.dat, com pontilhado, escadaria 3D e lista de materiais."
   },
   "FAQ": {
     "FAQ": "FAQ (Perguntas frequentes)",

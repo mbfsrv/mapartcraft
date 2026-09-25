@@ -4,7 +4,10 @@
     "CREDITS": "Translated by: co 91"
   },
   "HEAD-META-TAGS": {
-    "DESCRIPTION": "Minecraftの地図アート用 schematic / map.dat 生成ツール"
+    "LANGUAGE-TAG": "ja",
+    "OG-LOCALE": "ja_JP",
+    "TITLE": "MapartCraft – Minecraft（マイクラ）地図アート作成ツール｜schematic・map.dat 生成",
+    "DESCRIPTION": "ブラウザで使える無料の Minecraft 地図アート（マップアート）作成ツール。画像を NBT schematic や map.dat に変換でき、ディザリング・階段化（3D）・必要な材料の一覧にも対応しています。"
   },
   "FAQ": {
     "FAQ": "よくある質問",

@@ -4,7 +4,10 @@
     "CREDITS": "翻译自: OSC311"
   },
   "HEAD-META-TAGS": {
-    "DESCRIPTION": "我的世界地图画 schematic 档和 map.dat 档生成器"
+    "LANGUAGE-TAG": "zh-Hans",
+    "OG-LOCALE": "zh_CN",
+    "TITLE": "MapartCraft – 我的世界地图画生成器（schematic 与 map.dat）",
+    "DESCRIPTION": "免费的我的世界（Minecraft）地图画生成器，直接在浏览器中运行。可将任意图片转换为 NBT schematic 或 map.dat 文件，支持抖动像素化、3D 梯式和材料清单。"
   },
   "FAQ": {
     "FAQ": "常见问题",

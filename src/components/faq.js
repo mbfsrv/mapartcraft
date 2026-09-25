@@ -1,13 +1,21 @@
+import { useEffect } from "react";
 import { Link } from "react-router-dom";
 
 import "./faq.css";
 import IMG_Palette from "../images/Palette128_Unobtainable_Trans.png";
 import IMG_ClassicVsValley from "../images/classicVsValley.png";
 
+// the static copy of this page (noscript text, FAQPage structured data, llms-full.txt) is in scripts/seo/content.js;
+// keep it in sync when changing the questions or answers here
 function FAQ(props) {
+  // the FAQ is only written in English, whichever language it was opened from
+  useEffect(() => {
+    document.documentElement.lang = "en";
+  }, []);
+
   return (
     <div className="FAQ">
-      <Link to={`/${![undefined, "en"].includes(props.match.params.countryCode) ? props.match.params.countryCode : ""}`}>
+      <Link to={`/${![undefined, "en"].includes(props.match.params.countryCode) ? props.match.params.countryCode + "/" : ""}`}>
         <h3>Close</h3>
       </Link>
 
@@ -119,7 +127,7 @@ function FAQ(props) {
         to build, as it is not flat. 3D 'Classic' and 'Valley' modes produce the exact same resulting map image, however they are built differently; 'Valley' mode allows the map to be built without any downwards staircases, which may be easier in survival. Observe the difference:
       </p>
       <div style={{ textAlign: "center" }}>
-        <img alt="classicVsValley.png" src={IMG_ClassicVsValley} style={{"maxWidth": "75%"}}></img>
+        <img alt="Classic vs Valley staircasing: how the same map art is built in each mode" src={IMG_ClassicVsValley} style={{"maxWidth": "75%"}}></img>
       </div>
       <p>
         More staircasing modes can be enabled from the <em>Extras</em> settings tab.
@@ -153,7 +161,7 @@ function FAQ(props) {
       <p>Custom blocks can be added from the bottom of the blocks selection pane. Different versions of a block can be added for the same block name, eg for 1.12.2 and 1.13.2+. Some examples are provided in the 'examples' section. NBT tags / block states can be found on the <a href="https://minecraft.wiki/w/Block_states" target="_blank" rel="noopener noreferrer">Minecraft Wiki</a>. To edit an existing custom block, select it, edit the tags / versions etc, and then click the 'add' button to overwrite. Note that presets URLs do not support custom blocks.</p>
 
       <div style={{ textAlign: "center" }}>
-        <img alt="Palette" src={IMG_Palette} />
+        <img alt="Minecraft map colour palette, including the shades unobtainable in survival" src={IMG_Palette} />
       </div>
     </div>
   );

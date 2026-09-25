@@ -4,7 +4,10 @@
     "CREDITS": "Перевод: Cublay; Редактирование: Ajno, rekayno"
   },
   "HEAD-META-TAGS": {
-    "DESCRIPTION": "Генератор файлов schematic и map.dat для создания пиксель-артов на картах"
+    "LANGUAGE-TAG": "ru",
+    "OG-LOCALE": "ru_RU",
+    "TITLE": "MapartCraft – генератор мапартов для Minecraft: schematic и map.dat",
+    "DESCRIPTION": "Бесплатный генератор мапартов (пиксель-артов на картах) для Minecraft прямо в браузере. Превратите любое изображение в NBT-схематику или файлы map.dat со смешиванием цветов, 3D-ступенями и списком материалов."
   },
   "FAQ": {
     "FAQ": "FAQ",

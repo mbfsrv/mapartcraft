@@ -1,3 +1,6 @@
 # https://www.robotstxt.org/robotstxt.html
+# Search engines and AI crawlers (GPTBot, ClaudeBot, PerplexityBot, Google-Extended, ...) are all welcome.
 User-agent: *
-Disallow:
+Allow: /
+
+Sitemap: https://map-art.made-by-free.com/sitemap.xml

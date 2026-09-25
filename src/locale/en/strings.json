@@ -4,7 +4,10 @@
     "CREDITS": "Translated by: (Your Name Here)"
   },
   "HEAD-META-TAGS": {
-    "DESCRIPTION": "A Minecraft mapart schematic and map.dat generator"
+    "LANGUAGE-TAG": "en",
+    "OG-LOCALE": "en_US",
+    "TITLE": "MapartCraft – Minecraft Map Art Generator: Schematic & map.dat",
+    "DESCRIPTION": "Free in-browser Minecraft map art generator. Turn any image into an NBT schematic or map.dat files, with dithering, 3D staircasing and a materials list."
   },
   "FAQ": {
     "FAQ": "FAQ",
